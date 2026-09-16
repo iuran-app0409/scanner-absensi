@@ -8,9 +8,11 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-  <title>Scanner QR Absensi</title>
+  <title>Absensi Sekolah</title>
+
 
   <script src="https://unpkg.com/html5-qrcode"></script>
+
 
   <style>
 
@@ -18,105 +20,272 @@
       box-sizing: border-box;
     }
 
+
     body {
+
       margin: 0;
+
       padding: 20px;
+
       font-family: Arial, sans-serif;
+
       background: #f4f7fb;
+
       color: #1f2937;
+
     }
+
 
     .container {
+
       max-width: 600px;
+
       margin: auto;
+
     }
+
 
     .header {
+
       background: #1f4e78;
+
       color: white;
+
       padding: 25px;
+
       border-radius: 20px;
+
       text-align: center;
+
       margin-bottom: 20px;
+
     }
+
 
     .header h1 {
+
       margin: 0 0 8px;
+
       font-size: 28px;
+
     }
+
 
     .header p {
+
       margin: 0;
+
       font-size: 18px;
+
     }
+
 
     .card {
+
       background: white;
+
       padding: 25px;
+
       border-radius: 20px;
-      box-shadow: 0 5px 20px rgba(0,0,0,.10);
+
+      box-shadow:
+        0 5px 20px rgba(0,0,0,.10);
+
     }
+
+
+    .pilihan {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 12px;
+
+      margin-top: 20px;
+
+    }
+
+
+    .jenis {
+
+      border: none;
+
+      border-radius: 15px;
+
+      padding: 20px 10px;
+
+      font-size: 18px;
+
+      font-weight: bold;
+
+      color: white;
+
+      cursor: pointer;
+
+    }
+
+
+    .masuk {
+
+      background: #16a34a;
+
+    }
+
+
+    .pulang {
+
+      background: #2563eb;
+
+    }
+
+
+    .lembur {
+
+      background: #ea580c;
+
+    }
+
+
+    .jenis.aktif {
+
+      outline:
+        5px solid
+        rgba(0,0,0,.15);
+
+      transform: scale(1.02);
+
+    }
+
+
+    #scannerArea {
+
+      display: none;
+
+      margin-top: 25px;
+
+    }
+
 
     #reader {
+
       width: 100%;
+
       overflow: hidden;
+
       border-radius: 15px;
+
     }
 
-    button {
-      width: 100%;
-      border: none;
-      border-radius: 14px;
-      padding: 17px;
-      margin-top: 18px;
+
+    .pilihanAktif {
+
+      padding: 15px;
+
+      border-radius: 12px;
+
+      text-align: center;
+
+      background: #eff6ff;
+
       font-size: 20px;
+
       font-weight: bold;
-      cursor: pointer;
+
+      margin-bottom: 15px;
+
     }
+
+
+    button.control {
+
+      width: 100%;
+
+      border: none;
+
+      border-radius: 14px;
+
+      padding: 17px;
+
+      margin-top: 15px;
+
+      font-size: 19px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+    }
+
 
     #mulai {
+
       background: #1f4e78;
+
       color: white;
+
     }
+
 
     #stop {
+
       background: #dc2626;
+
       color: white;
+
     }
 
-    #stop:disabled {
-      opacity: .5;
-    }
 
     #status {
+
       text-align: center;
-      margin-top: 20px;
-      font-size: 18px;
+
+      margin-top: 18px;
+
+      font-size: 17px;
+
       font-weight: bold;
+
     }
+
 
     #hasil {
+
       display: none;
+
       margin-top: 20px;
+
       padding: 20px;
-      border-radius: 16px;
+
+      border-radius: 15px;
+
       background: #ecfdf5;
+
       text-align: center;
+
     }
 
-    .judul {
-      font-size: 20px;
-      font-weight: bold;
-    }
 
     #token {
-      margin-top: 15px;
-      padding: 15px;
-      background: white;
-      border-radius: 12px;
-      font-size: 17px;
+
+      margin-top: 12px;
+
       font-weight: bold;
+
       word-break: break-all;
+
+    }
+
+
+    @media(max-width:480px) {
+
+      .pilihan {
+
+        grid-template-columns: 1fr;
+
+      }
+
     }
 
   </style>
@@ -128,12 +297,15 @@
 
 <div class="container">
 
+
   <div class="header">
 
-    <h1>📷 SCANNER QR ABSENSI</h1>
+    <h1>
+      📷 ABSENSI SEKOLAH
+    </h1>
 
     <p>
-      Scan QR Code siswa atau guru
+      Pilih jenis absensi terlebih dahulu
     </p>
 
   </div>
@@ -141,54 +313,134 @@
 
   <div class="card">
 
-    <div id="reader"></div>
 
+    <!-- =========================================
+         PILIH JENIS
+    ========================================== -->
 
-    <button
-      id="mulai"
-      onclick="mulaiScan()">
+    <div id="pilihanArea">
 
-      📷 MULAI SCAN
+      <div style="
+        text-align:center;
+        font-size:20px;
+        font-weight:bold;
+      ">
 
-    </button>
-
-
-    <button
-      id="stop"
-      onclick="stopScan()"
-      disabled>
-
-      ⏹ STOP SCAN
-
-    </button>
-
-
-    <div id="status">
-
-      Scanner belum dimulai
-
-    </div>
-
-
-    <div id="hasil">
-
-      <div class="judul">
-
-        ✅ QR BERHASIL TERBACA
+        Pilih Jenis Absensi
 
       </div>
 
 
-      <div id="token"></div>
+      <div class="pilihan">
 
 
-      <div style="margin-top:15px;">
+        <button
+          class="jenis masuk"
+          onclick="pilihJenis('MASUK', this)">
 
-        ⏳ Membuka sistem absensi...
+          🟢<br>
+          MASUK
+
+        </button>
+
+
+        <button
+          class="jenis pulang"
+          onclick="pilihJenis('PULANG', this)">
+
+          🔵<br>
+          PULANG
+
+        </button>
+
+
+        <button
+          class="jenis lembur"
+          onclick="pilihJenis('LEMBUR', this)">
+
+          🟠<br>
+          LEMBUR
+
+        </button>
+
 
       </div>
 
     </div>
+
+
+    <!-- =========================================
+         SCANNER
+    ========================================== -->
+
+    <div id="scannerArea">
+
+
+      <div
+        class="pilihanAktif"
+        id="jenisAktif">
+
+      </div>
+
+
+      <div id="reader"></div>
+
+
+      <button
+        id="mulai"
+        class="control"
+        onclick="mulaiScan()">
+
+        📷 MULAI SCAN
+
+      </button>
+
+
+      <button
+        id="stop"
+        class="control"
+        onclick="stopScan()"
+        disabled>
+
+        ⏹ STOP SCAN
+
+      </button>
+
+
+      <div id="status">
+
+        Scanner belum dimulai
+
+      </div>
+
+
+      <div id="hasil">
+
+        <div
+          style="
+            font-size:20px;
+            font-weight:bold;
+          ">
+
+          ✅ QR BERHASIL TERBACA
+
+        </div>
+
+
+        <div id="token"></div>
+
+
+        <div style="margin-top:15px;">
+
+          ⏳ Membuka sistem absensi...
+
+        </div>
+
+      </div>
+
+
+    </div>
+
 
   </div>
 
@@ -197,19 +449,117 @@
 
 <script>
 
+
 let scanner = null;
 
 let sedangScan = false;
 
 let sudahTerbaca = false;
 
+let jenisDipilih = '';
+
 
 // ==================================================
-// ALAMAT WEB APP APPS SCRIPT
+// APPS SCRIPT
 // ==================================================
 
 const APP_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycby3FJoTXXj2xpUKoMEZexhf-lqpXUd7H-ovD6WSlu2q4vBinA0L-3lztOIvKOuSDDzZ/exec";
+
+
+// ==================================================
+// PILIH JENIS
+// ==================================================
+
+function pilihJenis(
+  jenis,
+  tombol
+) {
+
+  jenisDipilih =
+    String(jenis)
+      .trim()
+      .toUpperCase();
+
+
+  // aktifkan visual tombol
+
+  document.querySelectorAll(
+    '.jenis'
+  ).forEach(
+    function(btn) {
+
+      btn.classList.remove(
+        'aktif'
+      );
+
+    }
+  );
+
+
+  tombol.classList.add(
+    'aktif'
+  );
+
+
+  let teks = '';
+
+
+  if (
+    jenisDipilih === 'MASUK'
+  ) {
+
+    teks =
+      '🟢 MODE: MASUK';
+
+  }
+
+  else if (
+    jenisDipilih === 'PULANG'
+  ) {
+
+    teks =
+      '🔵 MODE: PULANG';
+
+  }
+
+  else if (
+    jenisDipilih === 'LEMBUR'
+  ) {
+
+    teks =
+      '🟠 MODE: LEMBUR';
+
+  }
+
+
+  document.getElementById(
+    'jenisAktif'
+  ).innerText =
+    teks;
+
+
+  document.getElementById(
+    'scannerArea'
+  ).style.display =
+    'block';
+
+
+  document.getElementById(
+    'status'
+  ).innerText =
+    'Tekan MULAI SCAN untuk membuka kamera.';
+
+
+  // scroll otomatis
+
+  document.getElementById(
+    'scannerArea'
+  ).scrollIntoView({
+    behavior: 'smooth'
+  });
+
+}
 
 
 // ==================================================
@@ -218,43 +568,72 @@ const APP_SCRIPT_URL =
 
 async function mulaiScan() {
 
+  if (
+    !jenisDipilih
+  ) {
+
+    alert(
+      'Pilih jenis absensi terlebih dahulu.'
+    );
+
+    return;
+
+  }
+
+
   if (sedangScan) {
     return;
   }
 
+
   sudahTerbaca = false;
 
-  document.getElementById("hasil")
-    .style.display = "none";
 
-  document.getElementById("status")
-    .innerText =
-      "⏳ Memulai kamera...";
+  document.getElementById(
+    'hasil'
+  ).style.display =
+    'none';
+
+
+  document.getElementById(
+    'status'
+  ).innerText =
+    '⏳ Memulai kamera...';
 
 
   try {
 
     scanner =
-      new Html5Qrcode("reader");
+      new Html5Qrcode(
+        'reader'
+      );
 
 
     const config = {
 
       fps: 10,
 
-      qrbox: function(width, height) {
+      qrbox:
+        function(width, height) {
 
-        const ukuran =
-          Math.floor(
-            Math.min(width, height) * 0.70
-          );
+          const ukuran =
+            Math.floor(
+              Math.min(
+                width,
+                height
+              ) * 0.70
+            );
 
-        return {
-          width: ukuran,
-          height: ukuran
-        };
 
-      }
+          return {
+
+            width: ukuran,
+
+            height: ukuran
+
+          };
+
+        }
 
     };
 
@@ -262,7 +641,8 @@ async function mulaiScan() {
     await scanner.start(
 
       {
-        facingMode: "environment"
+        facingMode:
+          'environment'
       },
 
       config,
@@ -271,7 +651,7 @@ async function mulaiScan() {
 
       function(errorMessage) {
 
-        // Scanner tetap mencari QR
+        // tetap mencari QR
 
       }
 
@@ -281,33 +661,38 @@ async function mulaiScan() {
     sedangScan = true;
 
 
-    document.getElementById("mulai")
-      .disabled = true;
+    document.getElementById(
+      'mulai'
+    ).disabled = true;
 
 
-    document.getElementById("stop")
-      .disabled = false;
+    document.getElementById(
+      'stop'
+    ).disabled = false;
 
 
-    document.getElementById("status")
-      .innerText =
-        "🟢 Kamera aktif — arahkan ke QR";
+    document.getElementById(
+      'status'
+    ).innerText =
+      '🟢 Kamera aktif — arahkan ke QR';
+
 
   }
 
 
-  catch (error) {
+  catch(error) {
 
     console.error(error);
 
 
-    document.getElementById("status")
-      .innerText =
-        "❌ Kamera gagal dibuka";
+    document.getElementById(
+      'status'
+    ).innerText =
+      '❌ Kamera gagal dibuka';
 
 
     alert(
-      "KAMERA GAGAL DIBUKA.\n\n" +
+      'KAMERA GAGAL DIBUKA.\n\n' +
       error
     );
 
@@ -325,7 +710,9 @@ async function mulaiScan() {
 // QR TERBACA
 // ==================================================
 
-async function ketikaQRTerbaca(decodedText) {
+async function ketikaQRTerbaca(
+  decodedText
+) {
 
   if (sudahTerbaca) {
     return;
@@ -336,84 +723,139 @@ async function ketikaQRTerbaca(decodedText) {
 
 
   const isiQR =
-    String(decodedText || "").trim();
+    String(
+      decodedText || ''
+    ).trim();
 
 
-  console.log(
-    "QR TERBACA:",
-    isiQR
-  );
+  document.getElementById(
+    'token'
+  ).innerText =
+    isiQR;
 
 
-  document.getElementById("token")
-    .innerText =
-      isiQR;
+  document.getElementById(
+    'hasil'
+  ).style.display =
+    'block';
 
 
-  document.getElementById("hasil")
-    .style.display =
-      "block";
+  document.getElementById(
+    'status'
+  ).innerText =
+    '✅ QR berhasil dibaca!';
 
 
-  document.getElementById("status")
-    .innerText =
-      "✅ QR berhasil dibaca!";
-
-
-  // Matikan kamera
   await stopScan();
 
 
   // ==================================================
-  // BUAT ALAMAT TUJUAN
+  // AMBIL TOKEN
   // ==================================================
 
-  let tujuan;
+  let token = isiQR;
 
 
-  // Kalau QR sudah berisi URL Apps Script
+  /*
+   * Kalau QR berisi URL Apps Script,
+   * ambil token dari parameter t
+   * atau token.
+   */
+
   if (
     isiQR.startsWith(
-      "https://script.google.com/"
+      'https://script.google.com/'
     )
   ) {
 
-    tujuan = isiQR;
+    try {
+
+      const qrUrl =
+        new URL(
+          isiQR
+        );
+
+
+      token =
+        qrUrl.searchParams.get(
+          't'
+        ) ||
+
+        qrUrl.searchParams.get(
+          'token'
+        ) ||
+
+        '';
+
+
+    }
+
+    catch(error) {
+
+      console.error(error);
+
+    }
 
   }
 
 
-  // Kalau QR hanya berisi token
-  else {
+  token =
+    String(
+      token || ''
+    ).trim();
 
-    tujuan =
-      APP_SCRIPT_URL +
-      "?t=" +
-      encodeURIComponent(
-        isiQR
-      );
+
+  if (!token) {
+
+    document.getElementById(
+      'status'
+    ).innerText =
+      '❌ Token QR tidak ditemukan.';
+
+    return;
 
   }
+
+
+  // ==================================================
+  // BUAT URL APPS SCRIPT
+  // ==================================================
+
+  const tujuan =
+    APP_SCRIPT_URL +
+    '?t=' +
+    encodeURIComponent(
+      token
+    ) +
+    '&jenis=' +
+    encodeURIComponent(
+      jenisDipilih
+    );
 
 
   console.log(
-    "MENUJU:",
+    'MENUJU:',
     tujuan
   );
 
 
-  document.getElementById("status")
-    .innerText =
-      "⏳ Membuka sistem absensi...";
+  document.getElementById(
+    'status'
+  ).innerText =
+    '⏳ Mengirim absensi ' +
+    jenisDipilih +
+    '...';
 
 
-  // Tunggu sebentar
-  setTimeout(function() {
+  setTimeout(
+    function() {
 
-    window.location.href =
-      tujuan;
+      window.location.href =
+        tujuan;
 
-  }, 800);
+    },
+    800
+  );
 
 }
 
@@ -442,7 +884,7 @@ async function stopScan() {
 
   }
 
-  catch (error) {
+  catch(error) {
 
     console.error(error);
 
@@ -454,12 +896,14 @@ async function stopScan() {
   sedangScan = false;
 
 
-  document.getElementById("mulai")
-    .disabled = false;
+  document.getElementById(
+    'mulai'
+  ).disabled = false;
 
 
-  document.getElementById("stop")
-    .disabled = true;
+  document.getElementById(
+    'stop'
+  ).disabled = true;
 
 }
 
