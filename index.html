@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Scanner QR Absensi</title>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #1f4e78;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 4px 15px rgba(0,0,0,.1);
+    }
+
+    #reader {
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 12px;
+      background: #1f4e78;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    #hasil {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 15px;
+      background: #ecfdf5;
+    }
+
+    #token {
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      word-break: break-all;
+    }
+
+    #status {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>📷 SCANNER QR ABSENSI</h1>
+
+  <div class="card">
+
+    <p>Arahkan kamera ke QR Code siswa atau guru.</p>
+
+    <div id="reader"></div>
+
+    <button onclick="mulaiScanner()">
+      📷 MULAI SCAN
+    </button>
+
+    <div id="status">
+      Scanner belum dimulai
+    </div>
+
+    <div id="hasil">
+
+      <div>✅ QR BERHASIL TERBACA</div>
+
+      <div id="token"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let scanner = null;
+let sedangScan = false;
+let sudahTerbaca = false;
+
+
+async function mulaiScanner() {
+
+  if (sedangScan) return;
+
+  sudahTerbaca = false;
+
+  document.getElementById("status").innerText =
+    "⏳ Meminta akses kamera...";
+
+  try {
+
+    scanner = new Html5Qrcode("reader");
+
+    const config = {
+      fps: 10,
+
+      qrbox: function(width, height) {
+
+        const ukuran =
+          Math.floor(Math.min(width, height) * 0.7);
+
+        return {
+          width: ukuran,
+          height: ukuran
+        };
+
+      }
+    };
+
+
+    await scanner.start(
+
+      {
+        facingMode: "environment"
+      },
+
+      config,
+
+      function(decodedText) {
+
+        if (sudahTerbaca) return;
+
+        sudahTerbaca = true;
+
+        document.getElementById("token").innerText =
+          decodedText;
+
+        document.getElementById("hasil").style.display =
+          "block";
+
+        document.getElementById("status").innerText =
+          "✅ QR berhasil dibaca!";
+
+        hentikanScanner();
+
+      },
+
+      function(errorMessage) {
+        // Scanner terus mencari QR
+      }
+
+    );
+
+
+    sedangScan = true;
+
+    document.getElementById("status").innerText =
+      "🟢 Kamera aktif — arahkan ke QR";
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    document.getElementById("status").innerText =
+      "❌ Kamera gagal dibuka";
+
+    alert(
+      "Kamera gagal dibuka.\n\n" +
+      error
+    );
+
+    scanner = null;
+    sedangScan = false;
+
+  }
+
+}
+
+
+async function hentikanScanner() {
+
+  if (!scanner || !sedangScan) return;
+
+  try {
+
+    await scanner.stop();
+
+    scanner.clear();
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+  scanner = null;
+  sedangScan = false;
+
+}
+
+</script>
+
+</body>
+</html>
