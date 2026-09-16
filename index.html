@@ -274,10 +274,12 @@ async function ketikaQRTerbaca(decodedText) {
 
   sudahTerbaca = true;
 
-  console.log("QR TERBACA:", decodedText);
+  const isiQR = String(decodedText || "").trim();
+
+  console.log("QR TERBACA:", isiQR);
 
   document.getElementById("token").innerText =
-    decodedText;
+    isiQR;
 
   document.getElementById("hasil").style.display =
     "block";
@@ -285,58 +287,56 @@ async function ketikaQRTerbaca(decodedText) {
   document.getElementById("status").innerText =
     "✅ QR berhasil dibaca!";
 
-
+  // Hentikan kamera
   await stopScan();
+
+  /*
+   * URL Web App Apps Script
+   */
+  const APP_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycby3FJoTXXj2xpUKoMEZexhf-lqpXUd7H-ovD6WSlu2q4vBinA0L-3lztOIvKOuSDDzZ/exec";
 
 
   /*
-   * QR harus berisi URL Apps Script.
+   * Jika QR berisi URL lengkap,
+   * langsung gunakan URL tersebut.
    *
-   * Contoh:
+   * Jika QR hanya berisi:
+   * QR-STD-00004
    *
-   * https://script.google.com/macros/s/XXXX/exec?token=QR-STD-00001
+   * maka otomatis dibuat:
    *
-   * URL tersebut akan membuka Apps Script.
-   *
-   * Code.gs kemudian membaca token
-   * dan menjalankan simpanAbsensi(token).
+   * APP_SCRIPT_URL?token=QR-STD-00004
    */
+
+  let tujuan;
+
+  if (isiQR.startsWith("https://script.google.com/")) {
+
+    tujuan = isiQR;
+
+  } else {
+
+    tujuan =
+      APP_SCRIPT_URL +
+      "?token=" +
+      encodeURIComponent(isiQR);
+
+  }
+
+
+  document.getElementById("status").innerText =
+    "⏳ Mengirim absensi...";
 
 
   setTimeout(function() {
 
-    const url =
-      String(decodedText || "").trim();
-
-
-    if (
-      url.startsWith(
-        "https://script.google.com/"
-      )
-    ) {
-
-      document.getElementById("status").innerText =
-        "⏳ Mengirim absensi...";
-
-      window.location.href = url;
-
-    } else {
-
-      document.getElementById("status").innerText =
-        "⚠️ QR bukan URL sistem absensi.";
-
-      alert(
-        "QR berhasil dibaca, tetapi isinya bukan URL Apps Script absensi.\n\n" +
-        "Isi QR:\n" +
-        url
-      );
-
-    }
+    window.location.href = tujuan;
 
   }, 500);
 
 }
-
+  
 
 /* =====================================
    STOP SCAN
