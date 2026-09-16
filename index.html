@@ -2,7 +2,6 @@
 <html lang="id">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta name="viewport"
@@ -13,7 +12,6 @@
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
@@ -23,30 +21,38 @@
       padding: 20px;
       font-family: Arial, sans-serif;
       background: #f4f7fb;
+      color: #1f2937;
     }
 
     .container {
-      max-width: 550px;
+      max-width: 600px;
       margin: auto;
     }
 
-    h1 {
+    .header {
+      background: #1f4e78;
+      color: white;
+      padding: 25px;
+      border-radius: 20px;
       text-align: center;
-      color: #1f4e78;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .header p {
+      margin: 0;
+      font-size: 18px;
     }
 
     .card {
       background: white;
-      padding: 20px;
+      padding: 25px;
       border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,.10);
-    }
-
-    .petunjuk {
-      text-align: center;
-      font-size: 18px;
-      margin-bottom: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.10);
     }
 
     #reader {
@@ -57,25 +63,33 @@
 
     button {
       width: 100%;
-      margin-top: 18px;
-      padding: 16px;
       border: none;
-      border-radius: 12px;
-      background: #1f4e78;
-      color: white;
-      font-size: 18px;
+      border-radius: 14px;
+      padding: 17px;
+      margin-top: 18px;
+      font-size: 20px;
       font-weight: bold;
       cursor: pointer;
     }
 
+    #mulai {
+      background: #1f4e78;
+      color: white;
+    }
+
     #stop {
       background: #dc2626;
+      color: white;
+    }
+
+    #stop:disabled {
+      opacity: .5;
     }
 
     #status {
       text-align: center;
-      margin-top: 18px;
-      font-size: 17px;
+      margin-top: 20px;
+      font-size: 18px;
       font-weight: bold;
     }
 
@@ -83,46 +97,49 @@
       display: none;
       margin-top: 20px;
       padding: 20px;
-      border-radius: 15px;
+      border-radius: 16px;
       background: #ecfdf5;
       text-align: center;
     }
 
-    .token {
-      margin-top: 12px;
-      padding: 12px;
-      background: white;
-      border-radius: 10px;
-      word-break: break-all;
+    .judul {
+      font-size: 20px;
       font-weight: bold;
     }
 
+    #token {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: bold;
+      word-break: break-all;
+    }
   </style>
-
 </head>
-
 
 <body>
 
 <div class="container">
 
-  <h1>📷 SCANNER QR ABSENSI</h1>
+  <div class="header">
+    <h1>📷 SCANNER QR ABSENSI</h1>
+    <p>Scan QR Code siswa atau guru</p>
+  </div>
 
   <div class="card">
-
-    <div class="petunjuk">
-      Arahkan kamera ke QR Code siswa atau guru.
-    </div>
 
     <div id="reader"></div>
 
     <button id="mulai"
-            onclick="mulaiScanner()">
+            onclick="mulaiScan()">
       📷 MULAI SCAN
     </button>
 
     <button id="stop"
-            onclick="hentikanScanner()">
+            onclick="stopScan()"
+            disabled>
       ⏹ STOP SCAN
     </button>
 
@@ -132,13 +149,11 @@
 
     <div id="hasil">
 
-      <div>
+      <div class="judul">
         ✅ QR BERHASIL TERBACA
       </div>
 
-      <div class="token"
-           id="token">
-      </div>
+      <div id="token"></div>
 
       <div style="margin-top:15px;">
         ⏳ Membuka sistem absensi...
@@ -158,11 +173,11 @@ let sedangScan = false;
 let sudahTerbaca = false;
 
 
-/* =========================================
-   MULAI SCANNER
-========================================= */
+/* =====================================
+   MULAI SCAN
+===================================== */
 
-async function mulaiScanner() {
+async function mulaiScan() {
 
   if (sedangScan) {
     return;
@@ -174,13 +189,11 @@ async function mulaiScanner() {
     "none";
 
   document.getElementById("status").innerText =
-    "⏳ Meminta akses kamera...";
-
+    "⏳ Memulai kamera...";
 
   try {
 
     scanner = new Html5Qrcode("reader");
-
 
     const config = {
 
@@ -195,7 +208,6 @@ async function mulaiScanner() {
           width: ukuran,
           height: ukuran
         };
-
       }
 
     };
@@ -220,10 +232,11 @@ async function mulaiScanner() {
 
     sedangScan = true;
 
+    document.getElementById("mulai").disabled =
+      true;
 
-    document.getElementById("mulai").style.display =
-      "none";
-
+    document.getElementById("stop").disabled =
+      false;
 
     document.getElementById("status").innerText =
       "🟢 Kamera aktif — arahkan ke QR";
@@ -233,16 +246,13 @@ async function mulaiScanner() {
 
     console.error(error);
 
-
     document.getElementById("status").innerText =
       "❌ Kamera gagal dibuka";
 
-
     alert(
-      "Kamera gagal dibuka.\n\n" +
+      "KAMERA GAGAL DIBUKA.\n\n" +
       error
     );
-
 
     scanner = null;
     sedangScan = false;
@@ -252,11 +262,11 @@ async function mulaiScanner() {
 }
 
 
-/* =========================================
-   QR BERHASIL TERBACA
-========================================= */
+/* =====================================
+   QR TERBACA
+===================================== */
 
-function ketikaQRTerbaca(decodedText) {
+async function ketikaQRTerbaca(decodedText) {
 
   if (sudahTerbaca) {
     return;
@@ -264,90 +274,85 @@ function ketikaQRTerbaca(decodedText) {
 
   sudahTerbaca = true;
 
-
-  console.log(
-    "QR TERBACA:",
-    decodedText
-  );
-
+  console.log("QR TERBACA:", decodedText);
 
   document.getElementById("token").innerText =
     decodedText;
 
-
   document.getElementById("hasil").style.display =
     "block";
-
 
   document.getElementById("status").innerText =
     "✅ QR berhasil dibaca!";
 
 
-  /*
-    Hentikan kamera
-  */
-
-  hentikanScanner();
+  await stopScan();
 
 
   /*
-    QR kita berisi URL Apps Script.
-    
-    Contoh:
-
-    https://script.google.com/macros/s/XXXX/exec
-    ?token=QR-STD-00001
-
-    Kita langsung membuka URL tersebut.
-
-    Code.gs yang baru akan membaca:
-    
-    e.parameter.token
-
-    kemudian menjalankan:
-
-    simpanAbsensi(token)
-  */
+   * QR harus berisi URL Apps Script.
+   *
+   * Contoh:
+   *
+   * https://script.google.com/macros/s/XXXX/exec?token=QR-STD-00001
+   *
+   * URL tersebut akan membuka Apps Script.
+   *
+   * Code.gs kemudian membaca token
+   * dan menjalankan simpanAbsensi(token).
+   */
 
 
   setTimeout(function() {
 
+    const url =
+      String(decodedText || "").trim();
+
+
     if (
-      decodedText.startsWith(
+      url.startsWith(
         "https://script.google.com/"
       )
     ) {
 
-      window.location.href =
-        decodedText;
+      document.getElementById("status").innerText =
+        "⏳ Mengirim absensi...";
+
+      window.location.href = url;
 
     } else {
 
+      document.getElementById("status").innerText =
+        "⚠️ QR bukan URL sistem absensi.";
+
       alert(
-        "QR terbaca, tetapi QR tersebut bukan URL sistem absensi."
+        "QR berhasil dibaca, tetapi isinya bukan URL Apps Script absensi.\n\n" +
+        "Isi QR:\n" +
+        url
       );
 
     }
 
-  }, 700);
+  }, 500);
 
 }
 
 
-/* =========================================
-   STOP SCANNER
-========================================= */
+/* =====================================
+   STOP SCAN
+===================================== */
 
-async function hentikanScanner() {
+async function stopScan() {
 
-  if (!scanner || !sedangScan) {
+  if (!scanner) {
     return;
   }
 
-
   try {
 
-    await scanner.stop();
+    if (sedangScan) {
+      await scanner.stop();
+    }
 
     scanner.clear();
 
@@ -357,19 +362,18 @@ async function hentikanScanner() {
 
   }
 
-
   scanner = null;
-
   sedangScan = false;
 
+  document.getElementById("mulai").disabled =
+    false;
 
-  document.getElementById("mulai").style.display =
-    "block";
+  document.getElementById("stop").disabled =
+    true;
 
 }
 
 </script>
 
 </body>
-
 </html>
