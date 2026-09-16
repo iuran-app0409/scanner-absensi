@@ -2,6 +2,7 @@
 <html lang="id">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta name="viewport"
@@ -12,6 +13,7 @@
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -116,47 +118,74 @@
       font-weight: bold;
       word-break: break-all;
     }
+
   </style>
+
 </head>
+
 
 <body>
 
 <div class="container">
 
   <div class="header">
+
     <h1>📷 SCANNER QR ABSENSI</h1>
-    <p>Scan QR Code siswa atau guru</p>
+
+    <p>
+      Scan QR Code siswa atau guru
+    </p>
+
   </div>
+
 
   <div class="card">
 
     <div id="reader"></div>
 
-    <button id="mulai"
-            onclick="mulaiScan()">
+
+    <button
+      id="mulai"
+      onclick="mulaiScan()">
+
       📷 MULAI SCAN
+
     </button>
 
-    <button id="stop"
-            onclick="stopScan()"
-            disabled>
+
+    <button
+      id="stop"
+      onclick="stopScan()"
+      disabled>
+
       ⏹ STOP SCAN
+
     </button>
+
 
     <div id="status">
+
       Scanner belum dimulai
+
     </div>
+
 
     <div id="hasil">
 
       <div class="judul">
+
         ✅ QR BERHASIL TERBACA
+
       </div>
+
 
       <div id="token"></div>
 
+
       <div style="margin-top:15px;">
+
         ⏳ Membuka sistem absensi...
+
       </div>
 
     </div>
@@ -169,13 +198,23 @@
 <script>
 
 let scanner = null;
+
 let sedangScan = false;
+
 let sudahTerbaca = false;
 
 
-/* =====================================
-   MULAI SCAN
-===================================== */
+// ==================================================
+// ALAMAT WEB APP APPS SCRIPT
+// ==================================================
+
+const APP_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycby3FJoTXXj2xpUKoMEZexhf-lqpXUd7H-ovD6WSlu2q4vBinA0L-3lztOIvKOuSDDzZ/exec";
+
+
+// ==================================================
+// MULAI SCAN
+// ==================================================
 
 async function mulaiScan() {
 
@@ -185,15 +224,19 @@ async function mulaiScan() {
 
   sudahTerbaca = false;
 
-  document.getElementById("hasil").style.display =
-    "none";
+  document.getElementById("hasil")
+    .style.display = "none";
 
-  document.getElementById("status").innerText =
-    "⏳ Memulai kamera...";
+  document.getElementById("status")
+    .innerText =
+      "⏳ Memulai kamera...";
+
 
   try {
 
-    scanner = new Html5Qrcode("reader");
+    scanner =
+      new Html5Qrcode("reader");
+
 
     const config = {
 
@@ -202,12 +245,15 @@ async function mulaiScan() {
       qrbox: function(width, height) {
 
         const ukuran =
-          Math.floor(Math.min(width, height) * 0.70);
+          Math.floor(
+            Math.min(width, height) * 0.70
+          );
 
         return {
           width: ukuran,
           height: ukuran
         };
+
       }
 
     };
@@ -224,7 +270,9 @@ async function mulaiScan() {
       ketikaQRTerbaca,
 
       function(errorMessage) {
-        // Scanner terus mencari QR
+
+        // Scanner tetap mencari QR
+
       }
 
     );
@@ -232,29 +280,40 @@ async function mulaiScan() {
 
     sedangScan = true;
 
-    document.getElementById("mulai").disabled =
-      true;
 
-    document.getElementById("stop").disabled =
-      false;
-
-    document.getElementById("status").innerText =
-      "🟢 Kamera aktif — arahkan ke QR";
+    document.getElementById("mulai")
+      .disabled = true;
 
 
-  } catch (error) {
+    document.getElementById("stop")
+      .disabled = false;
+
+
+    document.getElementById("status")
+      .innerText =
+        "🟢 Kamera aktif — arahkan ke QR";
+
+  }
+
+
+  catch (error) {
 
     console.error(error);
 
-    document.getElementById("status").innerText =
-      "❌ Kamera gagal dibuka";
+
+    document.getElementById("status")
+      .innerText =
+        "❌ Kamera gagal dibuka";
+
 
     alert(
       "KAMERA GAGAL DIBUKA.\n\n" +
       error
     );
 
+
     scanner = null;
+
     sedangScan = false;
 
   }
@@ -262,9 +321,9 @@ async function mulaiScan() {
 }
 
 
-/* =====================================
-   QR TERBACA
-===================================== */
+// ==================================================
+// QR TERBACA
+// ==================================================
 
 async function ketikaQRTerbaca(decodedText) {
 
@@ -272,75 +331,96 @@ async function ketikaQRTerbaca(decodedText) {
     return;
   }
 
+
   sudahTerbaca = true;
 
-  const isiQR = String(decodedText || "").trim();
 
-  console.log("QR TERBACA:", isiQR);
+  const isiQR =
+    String(decodedText || "").trim();
 
-  document.getElementById("token").innerText =
-    isiQR;
 
-  document.getElementById("hasil").style.display =
-    "block";
+  console.log(
+    "QR TERBACA:",
+    isiQR
+  );
 
-  document.getElementById("status").innerText =
-    "✅ QR berhasil dibaca!";
 
-  // Hentikan kamera
+  document.getElementById("token")
+    .innerText =
+      isiQR;
+
+
+  document.getElementById("hasil")
+    .style.display =
+      "block";
+
+
+  document.getElementById("status")
+    .innerText =
+      "✅ QR berhasil dibaca!";
+
+
+  // Matikan kamera
   await stopScan();
 
-  /*
-   * URL Web App Apps Script
-   */
-  const APP_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycby3FJoTXXj2xpUKoMEZexhf-lqpXUd7H-ovD6WSlu2q4vBinA0L-3lztOIvKOuSDDzZ/exec";
 
-
-  /*
-   * Jika QR berisi URL lengkap,
-   * langsung gunakan URL tersebut.
-   *
-   * Jika QR hanya berisi:
-   * QR-STD-00004
-   *
-   * maka otomatis dibuat:
-   *
-   * APP_SCRIPT_URL?token=QR-STD-00004
-   */
+  // ==================================================
+  // BUAT ALAMAT TUJUAN
+  // ==================================================
 
   let tujuan;
 
-  if (isiQR.startsWith("https://script.google.com/")) {
+
+  // Kalau QR sudah berisi URL Apps Script
+  if (
+    isiQR.startsWith(
+      "https://script.google.com/"
+    )
+  ) {
 
     tujuan = isiQR;
-
-  } else {
-
-    tujuan =
-      APP_SCRIPT_URL +
-      "?token=" +
-      encodeURIComponent(isiQR);
 
   }
 
 
-  document.getElementById("status").innerText =
-    "⏳ Mengirim absensi...";
+  // Kalau QR hanya berisi token
+  else {
+
+    tujuan =
+      APP_SCRIPT_URL +
+      "?t=" +
+      encodeURIComponent(
+        isiQR
+      );
+
+  }
 
 
+  console.log(
+    "MENUJU:",
+    tujuan
+  );
+
+
+  document.getElementById("status")
+    .innerText =
+      "⏳ Membuka sistem absensi...";
+
+
+  // Tunggu sebentar
   setTimeout(function() {
 
-    window.location.href = tujuan;
+    window.location.href =
+      tujuan;
 
-  }, 500);
+  }, 800);
 
 }
-  
 
-/* =====================================
-   STOP SCAN
-===================================== */
+
+// ==================================================
+// STOP SCAN
+// ==================================================
 
 async function stopScan() {
 
@@ -348,32 +428,43 @@ async function stopScan() {
     return;
   }
 
+
   try {
 
     if (sedangScan) {
+
       await scanner.stop();
+
     }
+
 
     scanner.clear();
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(error);
 
   }
 
+
   scanner = null;
+
   sedangScan = false;
 
-  document.getElementById("mulai").disabled =
-    false;
 
-  document.getElementById("stop").disabled =
-    true;
+  document.getElementById("mulai")
+    .disabled = false;
+
+
+  document.getElementById("stop")
+    .disabled = true;
 
 }
 
 </script>
 
 </body>
+
 </html>
